@@ -1,0 +1,31 @@
+[project]
+name = "coords"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "Henry Merrilees", email = "henry@merrile.es" }
+]
+dependencies = [
+    "transformers>=4.40.2",
+    "torch>=2.3.0",
+    "pettingzoo[mpe]>=1.24.3",
+    "stable-baselines3>=2.3.2",
+    "supersuit>=3.9.2",
+    "skrl>=1.1.0",
+]
+readme = "README.md"
+requires-python = ">= 3.8"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = []
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/coords"]
