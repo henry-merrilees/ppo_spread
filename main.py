@@ -1,7 +1,7 @@
 from skrl.multi_agents.torch.mappo import MAPPO, MAPPO_DEFAULT_CONFIG
 from skrl.envs.wrappers.torch import wrap_env
 from skrl.memories.torch import RandomMemory
-from skrl.utils.model_instantiators.torch import multivariate_gaussian_model
+from skrl.utils.model_instantiators.torch import gaussian_model as model
 from pettingzoo.mpe import simple_spread_v3
 import torch
 
@@ -30,12 +30,12 @@ models = {}
 for agent_name in env.possible_agents:
     # Then, when defining each model:
     models[agent_name] = {}
-    models[agent_name]["policy"] = multivariate_gaussian_model(
-        observation_space=env.observation_spaces[agent_name],
+    models[agent_name]["policy"] = model(
+        observation_space=env.observation_spaces[agent_name].shape[0],
         action_space=env.action_spaces[agent_name],
         device=env.device,
     )
-    models[agent_name]["value"] = multivariate_gaussian_model(
+    models[agent_name]["value"] = model(
         observation_space=env.observation_spaces[agent_name].shape[0]*num_agents,
         action_space=1,
         device=env.device,
@@ -72,6 +72,7 @@ while True:
     prev_data = None
     rewards = []
     while env.agents:
+        agent.pre_interaction(timestep, max_timesteps)
         states = agent.act(observations, infos, timestep)
 
         det_actions = {
@@ -113,6 +114,8 @@ while True:
                 timestep=timestep-1,
                 timesteps=max_timesteps,
             )
+        timestep += 1
         prev_data = data
+        agent.post_interaction(timestep, max_timesteps)
     print("reward", avg_reward.item())
 env.close()
